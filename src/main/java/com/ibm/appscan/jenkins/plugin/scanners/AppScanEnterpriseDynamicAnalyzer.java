@@ -64,8 +64,12 @@ import org.kohsuke.stapler.QueryParameter;
  */
 public class AppScanEnterpriseDynamicAnalyzer extends Scanner{
 
-	private static final String DYNAMIC_ANALYZER = "AppScan Enterprise Dynamic Analyzer"; //$NON-NLS-1$
-	
+	private static final String ASE_DYNAMIC_ANALYZER = "AppScan Enterprise Dynamic Analyzer"; //$NON-NLS-1$
+	private String m_loginUser;
+        private String m_loginPassword;
+        private String m_scanFile;
+        private String m_optimization;
+        private String m_extraField;
         private String m_applications;
 	private String m_folderId;
         private String m_aseTestPolicies;
@@ -83,7 +87,7 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner{
 			 String scanType,String optimization, String extraField, String aseAgent) {
 		super(target, hasOptions);
 		m_loginUser = loginUser;
-		m_loginPassword = Secret.fromString(loginPassword);
+		//m_loginPassword = Secret.fromString(loginPassword);
 		m_folderId = folderId;
                 m_aseTestPolicies=aseTestPolicies;
                 m_aseTemplate=aseTemplate;
@@ -98,7 +102,7 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner{
 	public AppScanEnterpriseDynamicAnalyzer(String target, boolean hasOptions) {
 		super(target, hasOptions);
 		m_loginUser = EMPTY;
-		m_loginPassword = Secret.fromString(EMPTY);
+		//m_loginPassword = Secret.fromString(EMPTY);
 		m_folderId = EMPTY;
                 m_aseTestPolicies=EMPTY;
                 m_aseTemplate=EMPTY;
@@ -120,11 +124,11 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner{
 	
 	@DataBoundSetter
 	public void setLoginPassword(String loginPassword) {
-		m_loginPassword = Secret.fromString(loginPassword);
+		//m_loginPassword = Secret.fromString(loginPassword);
 	}
 	
 	public Secret getLoginPassword() {
-		return m_loginPassword;
+		return null;
 	}
 
 	@DataBoundSetter
@@ -209,13 +213,18 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner{
 	public Map<String, String> getProperties(VariableResolver<String> resolver) {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put(TARGET, getTarget());
-		properties.put(LOGIN_USER, m_loginUser);
-		properties.put(LOGIN_PASSWORD, Secret.toString(m_loginPassword));
+		//properties.put(LOGIN_USER, m_loginUser);
+		//properties.put(LOGIN_PASSWORD, Secret.toString(m_loginPassword));
 		properties.put(FOLDER_ID, m_folderId);
-		properties.put(SCAN_FILE, resolver == null ? m_scanFile : resolvePath(m_scanFile, resolver));
+		//properties.put(SCAN_FILE, resolver == null ? m_scanFile : resolvePath(m_scanFile, resolver));
 		properties.put(SCAN_TYPE, m_scanType);
-		properties.put(OPTIMIZATION, m_optimization.equals("Normal")? "false":"true");
-		properties.put(EXTRA_FIELD, m_extraField);
+		//properties.put(OPTIMIZATION, m_optimization.equals("Normal")? "false":"true");
+		//properties.put(EXTRA_FIELD, m_extraField);
+                properties.put("testPolicyId", m_aseTestPolicies);
+                properties.put("applicationId", m_aseTestPolicies);
+                properties.put("templateID", m_aseTemplate);
+                
+                
 		return properties;
 	}
 	
@@ -225,23 +234,10 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner{
 		
 		@Override
 		public String getDisplayName() {
-			return DYNAMIC_ANALYZER;
+			return ASE_DYNAMIC_ANALYZER;
 		}
 		
-		public ListBoxModel doFillScanTypeItems() {
-			ListBoxModel model = new ListBoxModel();
-			model.add(Messages.option_staging(), STAGING);
-			model.add(Messages.option_production(), PRODUCTION);
-			return model;
-		}
-		
-		public ListBoxModel doFillOptimizationItems() {
-			ListBoxModel model = new ListBoxModel();
-			model.add(Messages.option_normal(), NORMAL);
-			model.add(Messages.option_optimized(), OPTIMIZED);
-			return model;
-		}
-                public ListBoxModel doFillCredentialsItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
+		public ListBoxModel doFillCredentialsItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
     		//We could just use listCredentials() to get the ListBoxModel, but need to work around JENKINS-12802.
     		ListBoxModel model = new ListBoxModel();
     		List<ASECredentials> credentialsList = CredentialsProvider.lookupCredentials(ASECredentials.class, context,

@@ -37,6 +37,7 @@ import com.hcl.appscan.sdk.error.ScannerException;
 import com.hcl.appscan.sdk.logging.IProgress;
 import com.hcl.appscan.sdk.logging.Message;
 import com.hcl.appscan.sdk.logging.StdOutProgress;
+import com.hcl.appscan.sdk.results.ASEResultsProvider;
 import com.hcl.appscan.sdk.results.IResultsProvider;
 import com.hcl.appscan.sdk.results.NonCompliantIssuesResultProvider;
 import com.hcl.appscan.sdk.scan.IScan;
@@ -45,6 +46,7 @@ import com.hcl.appscan.sdk.utils.SystemUtil;
 import com.ibm.appscan.jenkins.plugin.Messages;
 import com.ibm.appscan.jenkins.plugin.ScanFactory;
 import com.ibm.appscan.jenkins.plugin.actions.ResultsRetriever;
+import com.ibm.appscan.jenkins.plugin.auth.ASEJenkinsAuthenticationProvider;
 import com.ibm.appscan.jenkins.plugin.auth.ASoCCredentials;
 import com.ibm.appscan.jenkins.plugin.auth.JenkinsAuthenticationProvider;
 import com.ibm.appscan.jenkins.plugin.results.FailureCondition;
@@ -85,7 +87,7 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
 	private String m_name;
 	private String m_type;
 	private String m_target;
-	private String m_application;
+	//private String m_application;
 	private String m_credentials;
 	private List<FailureCondition> m_failureConditions;
 	private boolean m_emailNotification;
@@ -101,7 +103,7 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
 		m_name = (name == null || name.trim().equals("")) ? application.replaceAll(" ", "") + ThreadLocalRandom.current().nextInt(0, 10000) : name; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		m_type = scanner.getType();
 		m_target = target;
-		m_application = application;
+		//m_application = application;
 		m_credentials = credentials;
 		m_failureConditions = failureConditions;
 		m_emailNotification = email;
@@ -116,7 +118,7 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
 		m_name = (name == null || name.trim().equals("")) ? application.replaceAll(" ", "") + ThreadLocalRandom.current().nextInt(0, 10000) : name; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		m_type = scanner.getType();
 		m_target = "";
-		m_application = application;
+		//m_application = application;
 		m_credentials = credentials;
 		m_emailNotification = false;
 		m_wait = false;
@@ -145,9 +147,9 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
 		return m_target;
 	}
 	
-	public String getApplication() {
+	/*public String getApplication() {
 		return m_application;
-	}
+	}*/
 	
 	public String getCredentials() {
 		return m_credentials;
@@ -207,6 +209,10 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
     
     @Override
     public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        if (m_scanner.getType().equals("AppScan Enterprise Dynamic Analyzer")){
+            performASEScan ((Run<?,?>)build, launcher, listener);
+            return true;
+        }
     	perform((Run<?,?>)build, launcher, listener);
 		return true;
     }
@@ -232,7 +238,7 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
     	BuildVariableResolver resolver = build instanceof AbstractBuild ? new BuildVariableResolver((AbstractBuild<?,?>)build, listener) : null;
 		Map<String, String> properties = m_scanner.getProperties(resolver);
 		properties.put(CoreConstants.SCANNER_TYPE, m_scanner.getType());
-                properties.put(CoreConstants.APP_ID,  m_application);
+                //properties.put(CoreConstants.APP_ID,  m_application);
 		properties.put(CoreConstants.SCAN_NAME, m_name + "_" + SystemUtil.getTimeStamp()); //$NON-NLS-1$
 		properties.put(CoreConstants.EMAIL_NOTIFICATION, Boolean.toString(m_emailNotification));
 		properties.put("APPSCAN_IRGEN_CLIENT", "Jenkins");
@@ -309,6 +315,53 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
             shouldFailBuild(provider,build);	
     }
     
+    private void performASEScan(Run<?,?> build, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
+    	m_authProvider = new ASEJenkinsAuthenticationProvider(m_credentials, build.getParent().getParent());
+    	final IProgress progress = new ScanProgress(listener);
+    	final boolean suspend = m_wait;
+    	final IScan scan = ScanFactory.createScan(getScanProperties(build, listener), progress, m_authProvider);
+        
+    	
+    	IResultsProvider provider = launcher.getChannel().call(new Callable<IResultsProvider, AbortException>() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void checkRoles(RoleChecker arg0) {
+			}
+
+			@Override
+			public IResultsProvider call() throws AbortException {
+				try {
+					setInstallDir();
+		    		scan.run();
+		    		
+                                IResultsProvider provider=new ASEResultsProvider(scan.getScanId(), scan.getType(), scan.getServiceProvider(), progress);
+                                provider.setReportFormat(scan.getReportFormat());
+		    		if(suspend) {
+		    			progress.setStatus(new Message(Message.INFO, Messages.analysis_running()));
+		    			String status = provider.getStatus();
+		    			
+		    			while(status != null && status.equalsIgnoreCase(CoreConstants.RUNNING)) {
+		    				Thread.sleep(60000);
+		    				status = provider.getStatus();
+		    			}
+		    		}
+		    		
+		    		return provider;
+		    	}
+		    	catch(ScannerException | InvalidTargetException | InterruptedException e) {
+		    		throw new AbortException(Messages.error_running_scan(e.getLocalizedMessage()));
+		    	}
+			}
+		});
+
+    	provider.setProgress(new StdOutProgress()); //Avoid serialization problem with StreamBuildListener.
+    	build.addAction(new ResultsRetriever(build, provider, m_name));
+                
+        if(m_wait)
+            shouldFailBuild(provider,build);	
+    }
+    
     private void setInstallDir() {
     	if (SystemUtil.isWindows() && System.getProperty("user.home").toLowerCase().indexOf("system32")>=0) {
     		System.setProperty(CoreConstants.SACLIENT_INSTALL_DIR, JENKINS_INSTALL_DIR.getPath());
@@ -355,7 +408,7 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
     		return model;
     	}
     	
-    	public ListBoxModel doFillApplicationItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
+    	/*public ListBoxModel doFillApplicationItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
     		IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
     		Map<String, String> applications = new CloudApplicationProvider(authProvider).getApplications();
     		ListBoxModel model = new ListBoxModel();
@@ -367,7 +420,7 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
 	    			model.add(entry.getValue(), entry.getKey());
     		}
     		return model;
-    	}
+    	}*/
     	
     	private List<Entry<String , String>> sortApplications(Set<Entry<String , String>> set) {
     		List<Entry<String , String>> list= new ArrayList<>(set);
