@@ -35,6 +35,24 @@ function failBuildNonComplianceIssuesClicked(e){
     }
 }
 
+function templateSelect(e) {
+	if(e.checked) {
+		var table = getAncestorByType(e, 'table');
+                var standardTemplateSelect=table.querySelector('input[name=standardTemplate]');
+                standardTemplateSelect.checked=false;
+                
+	}
+}
+
+function standardTemplateSelect(e){
+    if (e.checked){
+                var table = getAncestorByType(e, 'table');
+                var templateSelect = table.querySelector('input[name=template]');
+                templateSelect.checked=false;
+                
+    }
+}
+
 function waitClicked(e) {
 	if(!e.checked) {
 		var table = getAncestorByType(e, 'table');
@@ -43,4 +61,12 @@ function waitClicked(e) {
 		failCheckbox.checked = false;
                 failNonCompliantIssuesCheckbox.checked=false;
 	}
+}
+
+function recordedCheck(e) {
+    if(e.checked){
+        var table = getAncestorByType(e, 'table');
+        var ifRecorded=table.querySelector('input[name=ifRecorded]');
+        ifRecorded.style.visibility='visible';
+    }
 }

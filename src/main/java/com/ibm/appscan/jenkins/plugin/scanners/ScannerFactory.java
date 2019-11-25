@@ -26,6 +26,8 @@ public class ScannerFactory implements ScannerConstants {
 		case STATIC_ANALYZER:
 			ret = new StaticAnalyzer(target);
 			break;
+                case ASE_ANALYZER:
+                        ret= new AppScanEnterpriseDynamicAnalyzer(target);
 		default:
 				break;
 		}

@@ -11,6 +11,7 @@ public interface ScannerConstants {
 	String LOGIN_USER				= "LoginUser";				//$NON-NLS-1$
 	String LOGIN_PASSWORD				= "LoginPassword";			//$NON-NLS-1$
 	String PRESENCE_ID				= "PresenceId";				//$NON-NLS-1$
+        String FOLDER_ID				= "folderId";				//$NON-NLS-1$
 	String SCAN_FILE				= "ScanFile";				//$NON-NLS-1$
 	String SCAN_TYPE				= "ScanType";				//$NON-NLS-1$
 	String OPTIMIZATION				= "UseTestOptimizer";			//$NON-NLS-1$
@@ -22,6 +23,7 @@ public interface ScannerConstants {
 	String DYNAMIC_ANALYZER				= "Dynamic Analyzer";			//$NON-NLS-1$
 	String MOBILE_ANALYZER				= "Mobile Analyzer";			//$NON-NLS-1$
 	String STATIC_ANALYZER				= "Static Analyzer";			//$NON-NLS-1$
+        String ASE_ANALYZER				= "AppScan Enterprise Dynamic Analyzer";			//$NON-NLS-1$
 
 	String CUSTOM					= "Custom";				//$NON-NLS-1$
 	String PRODUCTION				= "Production";				//$NON-NLS-1$

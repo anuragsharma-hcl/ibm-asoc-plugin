@@ -22,7 +22,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 
 public class StaticAnalyzer extends Scanner {
 
-	private static final String STATIC_ANALYZER = "Static Analyzer"; //$NON-NLS-1$
+	private static final String STATIC_ANALYZER = "ASoC Static Analyzer"; //$NON-NLS-1$
         
         private boolean m_openSourceOnly;
         
