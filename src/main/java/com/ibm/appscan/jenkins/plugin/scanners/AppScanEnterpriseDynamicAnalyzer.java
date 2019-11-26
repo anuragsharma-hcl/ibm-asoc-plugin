@@ -206,7 +206,7 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner{
 	
 	@Override
 	public String getType() {
-		return DYNAMIC_ANALYZER;
+		return ASE_DYNAMIC_ANALYZER;
 	}
 	
 	@Override

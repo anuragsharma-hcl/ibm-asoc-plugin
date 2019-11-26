@@ -20,9 +20,9 @@ public interface ScannerConstants {
 	String TEMPLATE_EXTENSION			= ".scant";				//$NON-NLS-1$
 	String TEMPLATE_EXTENSION2			= ".scan";				//$NON-NLS-1$
 	
-	String DYNAMIC_ANALYZER				= "Dynamic Analyzer";			//$NON-NLS-1$
-	String MOBILE_ANALYZER				= "Mobile Analyzer";			//$NON-NLS-1$
-	String STATIC_ANALYZER				= "Static Analyzer";			//$NON-NLS-1$
+	String DYNAMIC_ANALYZER				= "ASoC Dynamic Analyzer";			//$NON-NLS-1$
+	String MOBILE_ANALYZER				= "ASoC Mobile Analyzer";			//$NON-NLS-1$
+	String STATIC_ANALYZER				= "ASoC Static Analyzer";			//$NON-NLS-1$
         String ASE_ANALYZER				= "AppScan Enterprise Dynamic Analyzer";			//$NON-NLS-1$
 
 	String CUSTOM					= "Custom";				//$NON-NLS-1$
