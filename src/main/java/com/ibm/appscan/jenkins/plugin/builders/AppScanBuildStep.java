@@ -316,10 +316,11 @@ public class AppScanBuildStep extends Builder implements SimpleBuildStep, Serial
     }
     
     private void performASEScan(Run<?,?> build, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
-    	m_authProvider = new ASEJenkinsAuthenticationProvider(m_credentials, build.getParent().getParent());
+        Map<String,String> properties=getScanProperties(build, listener);
+    	m_authProvider = new ASEJenkinsAuthenticationProvider(properties.get("credentials"), build.getParent().getParent());
     	final IProgress progress = new ScanProgress(listener);
     	final boolean suspend = m_wait;
-    	final IScan scan = ScanFactory.createScan(getScanProperties(build, listener), progress, m_authProvider);
+    	final IScan scan = ScanFactory.createScan(properties, progress, m_authProvider);
         
     	
     	IResultsProvider provider = launcher.getChannel().call(new Callable<IResultsProvider, AbortException>() {

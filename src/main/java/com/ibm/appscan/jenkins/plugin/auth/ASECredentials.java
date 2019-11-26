@@ -17,6 +17,7 @@ import hudson.util.Secret;
 import java.util.List;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 /**
@@ -34,6 +35,7 @@ public class ASECredentials extends AppScanCredentials{
 	public ASECredentials(String id, String description, String username, String password, String url) {
 		this(CredentialsScope.GLOBAL, id, description, username, password);
                 m_url=url;
+                
 	}
 	
 	public ASECredentials(CredentialsScope scope, String id, String description, String username, String password) {
@@ -47,7 +49,7 @@ public class ASECredentials extends AppScanCredentials{
 	
         @Override
 	public String getServer() {
-		return m_url;
+		return "https://ap-asc-win47.nonprod.hclpnp.com:9443/ase";
 	}
 	
         @Override
@@ -66,6 +68,10 @@ public class ASECredentials extends AppScanCredentials{
         
         public void setCookies(List<String> cookies){
             m_cookies=cookies;
+        }
+        @DataBoundSetter
+        public void setUrl(String url){
+            m_url=url;
         }
 	
 	@Symbol("ase-credentials") //$NON-NLS-1$
@@ -88,9 +94,10 @@ public class ASECredentials extends AppScanCredentials{
 		public FormValidation doCheckPassword(@QueryParameter String password) {
 			return FormValidation.validateRequired(password);
 		}
+                /*
                 public FormValidation doCheckUrl(@QueryParameter String url) {
 			return FormValidation.validateRequired(url);
-		}
+		}*/
     }
 }
 

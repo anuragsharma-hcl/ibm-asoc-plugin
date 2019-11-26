@@ -20,7 +20,7 @@ LICENSE: Apache License, Version 2.0 https://www.apache.org/licenses/LICENSE-2.0
 		<f:select />
 	</f:entry>
         
-        <f:entry title="${%label.ase.test.policies}" field="aseTestPolicies">
+        <f:entry title="${%label.ase.test.policies}" field="aseTestPolicy">
 		<f:select />
 	</f:entry>
         
