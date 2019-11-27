@@ -20,7 +20,7 @@ import com.hcl.appscan.sdk.CoreConstants;
 import com.hcl.appscan.sdk.utils.SystemUtil;
 import com.ibm.appscan.jenkins.plugin.Messages;
 
-public class ASoCCredentials extends AppScanCredentials {
+public class ASoCCredentials extends UsernamePasswordCredentialsImpl {
 
 	private static final long serialVersionUID = 1L;
 	private Secret m_token;
@@ -39,18 +39,17 @@ public class ASoCCredentials extends AppScanCredentials {
 		return (DescriptorImpl)super.getDescriptor();
 	}
 	
-        @Override
+        
 	public String getServer() {
 		return SystemUtil.getDefaultServer();
 	}
 	
-        @Override
+        
 	public Secret getToken() {
 		return m_token;
 	}
 
-        @Override
-	public void setToken(String connection) {
+        public void setToken(String connection) {
 		m_token = Secret.fromString(connection);
 	}
 	
