@@ -49,7 +49,7 @@ public class ASECredentials extends AppScanCredentials{
 	
         @Override
 	public String getServer() {
-		return "https://ap-asc-win47.nonprod.hclpnp.com:9443/ase";
+		return m_url;
 	}
 	
         @Override
