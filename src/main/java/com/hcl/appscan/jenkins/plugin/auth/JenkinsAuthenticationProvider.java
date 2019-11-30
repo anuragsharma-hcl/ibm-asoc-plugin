@@ -23,6 +23,7 @@ import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.hcl.appscan.sdk.auth.AuthenticationHandler;
 import com.hcl.appscan.sdk.auth.IAuthenticationProvider;
 import com.hcl.appscan.sdk.auth.LoginType;
+import java.net.Proxy;
 
 public final class JenkinsAuthenticationProvider implements IAuthenticationProvider, Serializable {
 
@@ -77,4 +78,9 @@ public final class JenkinsAuthenticationProvider implements IAuthenticationProvi
 	private String getToken() {
 		return Secret.toString(m_credentials.getToken());
 	}
+
+    @Override
+    public Proxy getProxy() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

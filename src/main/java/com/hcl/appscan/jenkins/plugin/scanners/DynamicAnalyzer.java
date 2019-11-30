@@ -31,7 +31,7 @@ import hudson.util.VariableResolver;
 
 public class DynamicAnalyzer extends Scanner {
 
-	private static final String DYNAMIC_ANALYZER = "Dynamic Analyzer"; //$NON-NLS-1$
+	private static final String DYNAMIC_ANALYZER = "ASoC Dynamic Analyzer"; //$NON-NLS-1$
 	
 	private String m_loginUser;
 	private Secret m_loginPassword;

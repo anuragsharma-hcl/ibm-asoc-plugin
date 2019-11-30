@@ -6,19 +6,18 @@ LICENSE: Apache License, Version 2.0 https://www.apache.org/licenses/LICENSE-2.0
 -->
 	<script type="text/javascript" src="${resURL}/plugin/ibm-application-security/js/util.js"></script>
 
-	<f:entry title="${%label.credentials}" field="credentials">
+	<f:dropdownDescriptorSelector title="${%label.type}" field="scanner"/>
+        <!--<f:entry title="${%label.credentials}" field="credentials">
 		<f:select />
 	</f:entry>
 	
 	<f:entry title="${%label.application}" field="application">
 		<f:select />
-	</f:entry>
+	</f:entry>-->
 	
         <f:entry title="${%label.name}" field="name">
             <f:textbox />
         </f:entry>
-
-	<f:dropdownDescriptorSelector title="${%label.type}" field="scanner"/>
 
 	<f:entry field="email">
 		<f:checkbox title="${%label.email}"/>
@@ -28,9 +27,9 @@ LICENSE: Apache License, Version 2.0 https://www.apache.org/licenses/LICENSE-2.0
 		<f:checkbox title="${%label.wait}" onclick="waitClicked(this);" name="wait"/>
 	</f:entry>
         
-        <f:entry field="failBuildNonCompliance">
+        <!--<f:entry field="failBuildNonCompliance">
 		<f:checkbox title="${%label.noncompliant.issues}" onclick="failBuildNonComplianceIssuesClicked(this);" name="failBuildNonCompliance"/>
-	</f:entry>
+	</f:entry>-->
 
 	<f:entry field="failBuild">
 		<f:checkbox title="${%label.fail.build}" onclick="failBuildClicked(this);" name="failBuild"/>

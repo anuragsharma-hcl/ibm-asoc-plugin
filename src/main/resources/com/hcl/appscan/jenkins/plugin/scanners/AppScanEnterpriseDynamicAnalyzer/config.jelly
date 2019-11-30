@@ -1,0 +1,97 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<!--
+© Copyright IBM Corporation 2016.
+© Copyright HCL Technologies Ltd.2019.
+LICENSE: Apache License, Version 2.0 https://www.apache.org/licenses/LICENSE-2.0
+-->
+        <f:entry title="${%label.credentials}" field="credentials">
+		<f:select />
+	</f:entry>
+	
+	<f:entry title="${%label.application}" field="application">
+		<f:select />
+	</f:entry>
+	<f:entry title="${%label.starting.url}" field="target">
+		<f:textbox />
+	</f:entry>
+        
+        <f:entry title="${%label.ase.folder}" field="folderId">
+		<f:select />
+	</f:entry>
+        
+        <f:entry title="${%label.ase.test.policies}" field="aseTestPolicy">
+		<f:select />
+	</f:entry>
+        
+        <f:entry title="ASE Templates" field="aseTemplate">
+		<f:select />
+	</f:entry>
+        
+        <!-- uncomment the below when you want to provide the option of custom template and ASE template both.-->
+        <!--<f:entry title="Template Selection" field="templateType">
+            
+            <f:radioBlock name="templateType" title="Custom Template" >
+            <f:entry title="Location" id="ifRecorded" style="visibility:hidden" field="customTemplate">
+		<f:textbox />
+            </f:entry>
+            </f:radioBlock>
+            <f:radioBlock name="templateType" title="ASE Template" >
+            <f:entry title="Location" id="ifRecorded" style="visibility:hidden" field="trafficFile">
+		<f:select />
+            </f:entry>
+            </f:radioBlock>
+        </f:entry>-->
+        
+        <!--<f:entry field="standardTemplate">
+		<f:checkbox title="${%label.ase.standard.template}" onclick="standardTemplateSelect(this);" name="standardTemplate"/>
+	</f:entry>
+
+	<f:entry field="template">
+		<f:checkbox title="${%label.ase.template}" onclick="templateSelect(this);" name="template"/>
+	</f:entry>-->
+        
+        <f:entry title="${%label.login.management}" field="loginTypeOptions" inline="true">
+            
+            <f:radioBlock name="loginType" title="${%label.recorded}" >
+                <st:nbsp/>
+                <f:entry title="Upload Traffic File" field="trafficType">
+            
+                    <f:entry title="Location" id="ifRecorded" field="trafficFile">
+                        <f:textbox />
+                    </f:entry>
+                </f:entry>
+            </f:radioBlock>
+            <f:radioBlock name="loginType" title="${%label.automatic}">
+                <f:entry title="User Name" help="...">
+                    <f:textbox field="accessId" />
+                </f:entry>
+                <f:entry title="Password" help="...">
+                    <f:password field="secretKey" />
+                </f:entry>
+            </f:radioBlock>
+            <br/>
+            <f:radioBlock name="loginType" title="${%label.none}"/>
+        </f:entry>
+        
+        <f:entry title="Scan Mode" field="scanType" inline="true">
+                            <f:radioBlock name="scanType"  title="Full Scan"/>
+                            <f:radioBlock name="scanType"  title="Test Only"/>
+                            <f:radioBlock name="scanType"  title="Explore Only"/>
+        </f:entry>
+        
+        <f:entry title="Upload Traffic as explore data" field="exploreData">
+		<f:textbox />
+	</f:entry>
+	<f:entry title="Upload Traffic for multi-step" field="multiStep">
+		<f:textbox />
+	</f:entry>
+        <f:optionalBlock title="${%label.additional.options}" field="hasOptions" inline="true">
+
+		<f:entry title="${%label.ase.agent}" field="aseAgent">
+			<f:select />
+		</f:entry>
+						
+	</f:optionalBlock>
+
+</j:jelly>

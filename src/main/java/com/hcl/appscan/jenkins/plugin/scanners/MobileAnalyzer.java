@@ -29,7 +29,7 @@ import hudson.util.VariableResolver;
 
 public class MobileAnalyzer extends Scanner {
 
-	private static final String MOBILE_ANALYZER = "Mobile Analyzer"; //$NON-NLS-1$
+	private static final String MOBILE_ANALYZER = "ASoC Mobile Analyzer"; //$NON-NLS-1$
 	
 	private String m_loginUser;
 	private Secret m_loginPassword;
