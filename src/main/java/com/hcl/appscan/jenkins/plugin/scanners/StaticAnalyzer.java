@@ -45,7 +45,7 @@ public class StaticAnalyzer extends Scanner {
         
         public StaticAnalyzer(String target, String credentials, boolean hasOptions, boolean openSourceOnly){
             super(target, hasOptions);
-	    m_credentials = credentials;
+            m_credentials = credentials;
             m_openSourceOnly=openSourceOnly;
         }
         
