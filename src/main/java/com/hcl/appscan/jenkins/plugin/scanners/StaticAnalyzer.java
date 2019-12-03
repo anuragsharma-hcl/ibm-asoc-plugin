@@ -11,6 +11,7 @@ import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.hcl.appscan.jenkins.plugin.Messages;
 import com.hcl.appscan.jenkins.plugin.auth.ASoCCredentials;
 import com.hcl.appscan.jenkins.plugin.auth.JenkinsAuthenticationProvider;
+import static com.hcl.appscan.jenkins.plugin.scanners.ScannerConstants.EMPTY;
 import com.hcl.appscan.sdk.CoreConstants;
 import com.hcl.appscan.sdk.app.CloudApplicationProvider;
 import com.hcl.appscan.sdk.auth.IAuthenticationProvider;
@@ -40,6 +41,7 @@ public class StaticAnalyzer extends Scanner {
 
 	private static final String STATIC_ANALYZER = "ASoC Static Analyzer"; //$NON-NLS-1$
         private String m_credentials;
+	private String m_application;
         private boolean m_openSourceOnly;
         
         @Deprecated
@@ -47,9 +49,10 @@ public class StaticAnalyzer extends Scanner {
             this(target, false);
         }
         
-        public StaticAnalyzer(String target, String credentials, boolean hasOptions, boolean openSourceOnly){
+        public StaticAnalyzer(String target, String credentials, String application, boolean hasOptions, boolean openSourceOnly){
             super(target, hasOptions);
             m_credentials = credentials;
+	    m_application = application;
             m_openSourceOnly=openSourceOnly;
         }
         
@@ -57,6 +60,7 @@ public class StaticAnalyzer extends Scanner {
 	public StaticAnalyzer(String target,boolean hasOptions) {
 		super(target, hasOptions);
 		m_credentials = EMPTY;
+		m_application = EMPTY;
                 m_openSourceOnly=false;
 	}
 	
@@ -68,7 +72,16 @@ public class StaticAnalyzer extends Scanner {
 	public String getCredentials() {
 	    return m_credentials;
 	}
-
+	
+	@DataBoundSetter
+	public void setApplication(String application) {
+		m_application = application;
+	}
+	
+	public String getApplication() {
+		return m_application;
+	}
+	
 	@Override
 	public String getType() {
 		return STATIC_ANALYZER;

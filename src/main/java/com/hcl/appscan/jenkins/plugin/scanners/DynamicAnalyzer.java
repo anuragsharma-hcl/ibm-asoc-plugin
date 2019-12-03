@@ -44,6 +44,7 @@ public class DynamicAnalyzer extends Scanner {
 
 	private static final String DYNAMIC_ANALYZER = "ASoC Dynamic Analyzer"; //$NON-NLS-1$
 	private String m_credentials;
+	private String m_application;
 	private String m_loginUser;
 	private Secret m_loginPassword;
 	private String m_presenceId;
@@ -55,14 +56,15 @@ public class DynamicAnalyzer extends Scanner {
 	
 	@Deprecated
 	public DynamicAnalyzer(String target) {
-		this(target, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY); 
+		this(target, EMPTY, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY); 
 	}
 	
 	@Deprecated
-	public DynamicAnalyzer(String target, String credentials, boolean hasOptions, String loginUser, String loginPassword, String presenceId, String scanFile, 
+	public DynamicAnalyzer(String target, String credentials,  String application, boolean hasOptions, String loginUser, String loginPassword, String presenceId, String scanFile, 
 			String testPolicy, String scanType,String optimization, String extraField) {
 		super(target, hasOptions);
 		m_credentials = credentials;
+		m_application = application;
 		m_loginUser = loginUser;
 		m_loginPassword = Secret.fromString(loginPassword);
 		m_presenceId = presenceId;
@@ -77,6 +79,7 @@ public class DynamicAnalyzer extends Scanner {
 	public DynamicAnalyzer(String target, boolean hasOptions) {
 		super(target, hasOptions);
 		m_credentials = EMPTY;
+		m_application = EMPTY;
 		m_loginUser = EMPTY;
 		m_loginPassword = Secret.fromString(EMPTY);
 		m_presenceId = EMPTY;
@@ -94,6 +97,15 @@ public class DynamicAnalyzer extends Scanner {
         
 	public String getCredentials() {
 	    return m_credentials;
+	}
+	
+	@DataBoundSetter
+	public void setApplication(String application) {
+		m_application = application;
+	}
+	
+	public String getApplication() {
+		return m_application;
 	}
 	
 	@DataBoundSetter

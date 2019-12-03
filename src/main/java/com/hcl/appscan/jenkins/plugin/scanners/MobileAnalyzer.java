@@ -42,6 +42,7 @@ public class MobileAnalyzer extends Scanner {
 
 	private static final String MOBILE_ANALYZER = "ASoC Mobile Analyzer"; //$NON-NLS-1$
 	private String m_credentials;
+	private String m_application;
 	private String m_loginUser;
 	private Secret m_loginPassword;
 	private String m_extraField;
@@ -49,13 +50,14 @@ public class MobileAnalyzer extends Scanner {
 	
 	@Deprecated
 	public MobileAnalyzer(String target) {
-		this(target, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY);
+		this(target, EMPTY, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY);
 	}
 	
 	@Deprecated
-	public MobileAnalyzer(String target, String credentials, boolean hasOptions, String loginUser, String loginPassword, String extraField, String presenceId) {
+	public MobileAnalyzer(String target, String credentials, String application, boolean hasOptions, String loginUser, String loginPassword, String extraField, String presenceId) {
 		super(target, hasOptions);
 		m_credentials = credentials;
+		m_application = application;
 		m_loginUser = loginUser;
 		m_loginPassword = Secret.fromString(loginPassword);
 		m_extraField = extraField;
@@ -66,6 +68,7 @@ public class MobileAnalyzer extends Scanner {
 	public MobileAnalyzer(String target, boolean hasOptions) {
 		super(target, hasOptions);
 		m_credentials = EMPTY;
+		m_application = EMPTY;
 		m_loginUser = EMPTY;
 		m_loginPassword = Secret.fromString(EMPTY);
 		m_extraField = EMPTY;
@@ -79,6 +82,15 @@ public class MobileAnalyzer extends Scanner {
         
 	public String getCredentials() {
 	    return m_credentials;
+	}
+	
+	@DataBoundSetter
+	public void setApplication(String application) {
+		m_application = application;
+	}
+	
+	public String getApplication() {
+		return m_application;
 	}
 	
 	@DataBoundSetter
