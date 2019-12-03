@@ -35,24 +35,35 @@ import org.kohsuke.stapler.DataBoundSetter;
 public class StaticAnalyzer extends Scanner {
 
 	private static final String STATIC_ANALYZER = "ASoC Static Analyzer"; //$NON-NLS-1$
-        
+        private String m_credentials;
         private boolean m_openSourceOnly;
         
         @Deprecated
         public StaticAnalyzer(String target){
-            this(target,false);
+            this(target, false);
         }
         
-        public StaticAnalyzer(String target, boolean hasOptions, boolean openSourceOnly){
+        public StaticAnalyzer(String target, String credentials, boolean hasOptions, boolean openSourceOnly){
             super(target, hasOptions);
+	    m_credentials = credentials;
             m_openSourceOnly=openSourceOnly;
         }
         
 	@DataBoundConstructor
 	public StaticAnalyzer(String target,boolean hasOptions) {
 		super(target, hasOptions);
+		m_credentials = EMPTY;
                 m_openSourceOnly=false;
 	}
+	
+	@DataBoundSetter
+	public void setCredentials(String credentials) {
+		m_credentials = credentials;
+	}
+        
+    public String getCredentials() {
+        return m_credentials;
+    }
 
 	@Override
 	public String getType() {
@@ -73,6 +84,7 @@ public class StaticAnalyzer extends Scanner {
 		properties.put(TARGET, resolver == null ? getTarget() : resolvePath(getTarget(), resolver));
                 if (m_openSourceOnly)
                     properties.put(CoreConstants.OPEN_SOURCE_ONLY, "");
+		properties.put(CREDENTIALS, m_credentials);
 		return properties;
 	}
 	

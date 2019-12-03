@@ -37,7 +37,7 @@ import java.util.List;
 public class MobileAnalyzer extends Scanner {
 
 	private static final String MOBILE_ANALYZER = "ASoC Mobile Analyzer"; //$NON-NLS-1$
-	
+	private String m_credentials;
 	private String m_loginUser;
 	private Secret m_loginPassword;
 	private String m_extraField;
@@ -45,12 +45,13 @@ public class MobileAnalyzer extends Scanner {
 	
 	@Deprecated
 	public MobileAnalyzer(String target) {
-		this(target, false, EMPTY, EMPTY, EMPTY, EMPTY);
+		this(target, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY);
 	}
 	
 	@Deprecated
-	public MobileAnalyzer(String target, boolean hasOptions, String loginUser, String loginPassword, String extraField, String presenceId) {
+	public MobileAnalyzer(String target, String credentials, boolean hasOptions, String loginUser, String loginPassword, String extraField, String presenceId) {
 		super(target, hasOptions);
+		m_credentials = credentials;
 		m_loginUser = loginUser;
 		m_loginPassword = Secret.fromString(loginPassword);
 		m_extraField = extraField;
@@ -60,11 +61,21 @@ public class MobileAnalyzer extends Scanner {
 	@DataBoundConstructor
 	public MobileAnalyzer(String target, boolean hasOptions) {
 		super(target, hasOptions);
+		m_credentials = EMPTY;
 		m_loginUser = EMPTY;
 		m_loginPassword = Secret.fromString(EMPTY);
 		m_extraField = EMPTY;
 		m_presenceId = EMPTY;
 	}
+	
+	@DataBoundSetter
+	public void setCredentials(String credentials) {
+		m_credentials = credentials;
+	}
+        
+    public String getCredentials() {
+        return m_credentials;
+    }
 	
 	@DataBoundSetter
 	public void setLoginUser(String loginUser) {
@@ -115,6 +126,7 @@ public class MobileAnalyzer extends Scanner {
 		properties.put(LOGIN_PASSWORD, Secret.toString(m_loginPassword));
 		properties.put(EXTRA_FIELD, m_extraField);
 		properties.put(PRESENCE_ID, m_presenceId);
+		properties.put(CREDENTIALS, m_credentials);
 		return properties;
 	}
 

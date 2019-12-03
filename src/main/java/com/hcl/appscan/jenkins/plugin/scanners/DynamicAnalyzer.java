@@ -38,7 +38,7 @@ import java.util.List;
 public class DynamicAnalyzer extends Scanner {
 
 	private static final String DYNAMIC_ANALYZER = "ASoC Dynamic Analyzer"; //$NON-NLS-1$
-	
+	private String m_credentials;
 	private String m_loginUser;
 	private Secret m_loginPassword;
 	private String m_presenceId;
@@ -50,13 +50,14 @@ public class DynamicAnalyzer extends Scanner {
 	
 	@Deprecated
 	public DynamicAnalyzer(String target) {
-		this(target, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY); 
+		this(target, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY); 
 	}
 	
 	@Deprecated
-	public DynamicAnalyzer(String target, boolean hasOptions, String loginUser, String loginPassword, String presenceId, String scanFile, 
+	public DynamicAnalyzer(String target, String credentials, boolean hasOptions, String loginUser, String loginPassword, String presenceId, String scanFile, 
 			String testPolicy, String scanType,String optimization, String extraField) {
 		super(target, hasOptions);
+		m_credentials = credentials;
 		m_loginUser = loginUser;
 		m_loginPassword = Secret.fromString(loginPassword);
 		m_presenceId = presenceId;
@@ -70,6 +71,7 @@ public class DynamicAnalyzer extends Scanner {
 	@DataBoundConstructor
 	public DynamicAnalyzer(String target, boolean hasOptions) {
 		super(target, hasOptions);
+		m_credentials = EMPTY;
 		m_loginUser = EMPTY;
 		m_loginPassword = Secret.fromString(EMPTY);
 		m_presenceId = EMPTY;
@@ -79,6 +81,15 @@ public class DynamicAnalyzer extends Scanner {
 		m_optimization = EMPTY;
 		m_extraField = EMPTY;
 	}
+	
+	 @DataBoundSetter
+	public void setCredentials(String credentials) {
+		m_credentials = credentials;
+	}
+        
+    public String getCredentials() {
+        return m_credentials;
+    }
 	
 	@DataBoundSetter
 	public void setLoginUser(String loginUser) {
@@ -169,6 +180,7 @@ public class DynamicAnalyzer extends Scanner {
 		properties.put(SCAN_TYPE, m_scanType);
 		properties.put(OPTIMIZATION, m_optimization.equals("Normal")? "false":"true");
 		properties.put(EXTRA_FIELD, m_extraField);
+		properties.put(CREDENTIALS, m_credentials);
 		return properties;
 	}
 	
