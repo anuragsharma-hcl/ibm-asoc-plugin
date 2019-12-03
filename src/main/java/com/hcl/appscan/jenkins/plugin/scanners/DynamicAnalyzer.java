@@ -6,6 +6,8 @@
 
 package com.hcl.appscan.jenkins.plugin.scanners;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,16 +20,20 @@ import org.kohsuke.stapler.QueryParameter;
 import com.hcl.appscan.sdk.auth.IAuthenticationProvider;
 import com.hcl.appscan.sdk.presence.CloudPresenceProvider;
 import com.hcl.appscan.jenkins.plugin.Messages;
+import com.hcl.appscan.jenkins.plugin.auth.ASoCCredentials;
 import com.hcl.appscan.jenkins.plugin.scanners.Scanner;
 import com.hcl.appscan.jenkins.plugin.auth.JenkinsAuthenticationProvider;
 
 import hudson.Extension;
 import hudson.RelativePath;
 import hudson.model.ItemGroup;
+import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import hudson.util.VariableResolver;
+import java.util.Collections;
+import java.util.List;
 
 public class DynamicAnalyzer extends Scanner {
 
@@ -188,6 +194,36 @@ public class DynamicAnalyzer extends Scanner {
 			model.add(Messages.option_optimized(), OPTIMIZED);
 			return model;
 		}
+		
+		public ListBoxModel doFillCredentialsItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
+            //We could just use listCredentials() to get the ListBoxModel, but need to work around JENKINS-12802.
+            ListBoxModel model = new ListBoxModel();
+            List<ASoCCredentials> credentialsList = CredentialsProvider.lookupCredentials(ASoCCredentials.class, context,
+                            ACL.SYSTEM, Collections.<DomainRequirement>emptyList());
+            boolean hasSelected = false;
+
+            for(ASoCCredentials creds : credentialsList) {
+                    if(creds.getId().equals(credentials))
+                            hasSelected = true;
+                    String displayName = creds.getDescription();
+                    displayName = displayName == null || displayName.equals("") ? creds.getUsername() + "/******" : displayName; //$NON-NLS-1$
+                    model.add(new ListBoxModel.Option(displayName, creds.getId(), creds.getId().equals(credentials))); //$NON-NLS-1$
+            }
+            if(!hasSelected)
+                    model.add(new ListBoxModel.Option("", "", true)); //$NON-NLS-1$ //$NON-NLS-2$
+            return model;
+	    }
+                
+        public FormValidation doCheckCredentials(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
+            if(credentials.trim().equals("")) //$NON-NLS-1$
+                    return FormValidation.errorWithMarkup(Messages.error_no_creds("/credentials")); //$NON-NLS-1$
+
+            IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
+            if(authProvider.isTokenExpired())
+                    return FormValidation.errorWithMarkup(Messages.error_token_expired("/credentials")); //$NON-NLS-1$
+
+            return FormValidation.ok();
+        }
 		
     	public ListBoxModel doFillPresenceIdItems(@RelativePath("..") @QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) { //$NON-NLS-1$
     		IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
