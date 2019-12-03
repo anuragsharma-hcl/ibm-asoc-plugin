@@ -12,6 +12,7 @@ import com.hcl.appscan.jenkins.plugin.Messages;
 import com.hcl.appscan.jenkins.plugin.auth.ASoCCredentials;
 import com.hcl.appscan.jenkins.plugin.auth.JenkinsAuthenticationProvider;
 import com.hcl.appscan.sdk.CoreConstants;
+import com.hcl.appscan.sdk.app.CloudApplicationProvider;
 import com.hcl.appscan.sdk.auth.IAuthenticationProvider;
 import com.hcl.appscan.sdk.scanners.sast.SASTConstants;
 import java.util.HashMap;
@@ -27,8 +28,11 @@ import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.VariableResolver;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundSetter;
 
@@ -129,6 +133,34 @@ public class StaticAnalyzer extends Scanner {
 				return FormValidation.errorWithMarkup(Messages.error_token_expired("/credentials")); //$NON-NLS-1$
 
 			return FormValidation.ok();
+		}
+		
+		public ListBoxModel doFillApplicationItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
+		    IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
+		    Map<String, String> applications = new CloudApplicationProvider(authProvider).getApplications();
+		    ListBoxModel model = new ListBoxModel();
+
+		    if(applications != null) {
+			    List<Map.Entry<String , String>> list=sortApplications(applications.entrySet());
+
+			    for(Map.Entry<String, String> entry : list)
+				    model.add(entry.getValue(), entry.getKey());
+		    }
+		    return model;
+		}
+    	
+		private List<Map.Entry<String , String>> sortApplications(Set<Map.Entry<String , String>> set) {
+			List<Map.Entry<String , String>> list= new ArrayList<>(set);
+			if (list.size()>1) {
+				Collections.sort( list, new Comparator<Map.Entry<String, String>>()
+			{
+			    public int compare( Map.Entry<String, String> o1, Map.Entry<String, String> o2 )
+			    {
+				return (o1.getValue().toLowerCase()).compareTo( o2.getValue().toLowerCase() );
+			    }
+			} );
+			}
+			return list;
 		}
 	}
 }

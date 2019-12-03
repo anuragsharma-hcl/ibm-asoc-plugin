@@ -10,6 +10,10 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
@@ -19,6 +23,7 @@ import org.kohsuke.stapler.QueryParameter;
 
 import com.hcl.appscan.sdk.auth.IAuthenticationProvider;
 import com.hcl.appscan.sdk.presence.CloudPresenceProvider;
+import com.hcl.appscan.sdk.app.CloudApplicationProvider;
 import com.hcl.appscan.jenkins.plugin.Messages;
 import com.hcl.appscan.jenkins.plugin.auth.ASoCCredentials;
 import com.hcl.appscan.jenkins.plugin.scanners.Scanner;
@@ -235,6 +240,34 @@ public class DynamicAnalyzer extends Scanner {
 				return FormValidation.errorWithMarkup(Messages.error_token_expired("/credentials")); //$NON-NLS-1$
 
 			return FormValidation.ok();
+		}
+		
+		public ListBoxModel doFillApplicationItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
+		    IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
+		    Map<String, String> applications = new CloudApplicationProvider(authProvider).getApplications();
+		    ListBoxModel model = new ListBoxModel();
+
+		    if(applications != null) {
+			    List<Entry<String , String>> list=sortApplications(applications.entrySet());
+
+			    for(Map.Entry<String, String> entry : list)
+				    model.add(entry.getValue(), entry.getKey());
+		    }
+		    return model;
+		}
+    	
+		private List<Entry<String , String>> sortApplications(Set<Entry<String , String>> set) {
+			List<Entry<String , String>> list= new ArrayList<>(set);
+			if (list.size()>1) {
+				Collections.sort( list, new Comparator<Map.Entry<String, String>>()
+			{
+			    public int compare( Map.Entry<String, String> o1, Map.Entry<String, String> o2 )
+			    {
+				return (o1.getValue().toLowerCase()).compareTo( o2.getValue().toLowerCase() );
+			    }
+			} );
+			}
+			return list;
 		}
 		
     	public ListBoxModel doFillPresenceIdItems(@RelativePath("..") @QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) { //$NON-NLS-1$
