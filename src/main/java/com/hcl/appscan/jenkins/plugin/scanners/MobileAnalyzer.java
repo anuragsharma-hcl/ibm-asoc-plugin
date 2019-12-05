@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MobileAnalyzer extends Scanner {
 
@@ -69,7 +70,7 @@ public class MobileAnalyzer extends Scanner {
 		m_loginPassword = Secret.fromString(loginPassword);
 		m_extraField = extraField;
 		m_presenceId = presenceId;
-		m_testName = testName;
+		m_testName = (testName == null || testName.trim().equals("")) ? "" + ThreadLocalRandom.current().nextInt(0, 10000) : testName;
 		m_email = email;
 		m_wait = wait;
 		m_failBuildNonCompliance = failBuildNonCompliance;

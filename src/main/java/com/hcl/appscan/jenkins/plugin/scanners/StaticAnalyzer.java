@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundSetter;
 
@@ -60,7 +61,7 @@ public class StaticAnalyzer extends Scanner {
 		m_credentials = credentials;
 		m_application = application;
 		m_openSourceOnly=openSourceOnly;
-		m_testName = testName;
+		m_testName = (testName == null || testName.trim().equals("")) ? "" + ThreadLocalRandom.current().nextInt(0, 10000) : testName;
 		m_email = email;
 		m_wait = wait;
 		m_failBuildNonCompliance = failBuildNonCompliance;
