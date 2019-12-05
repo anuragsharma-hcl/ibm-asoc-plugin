@@ -41,20 +41,28 @@ import java.util.Set;
 public class MobileAnalyzer extends Scanner {
 
 	private static final String MOBILE_ANALYZER = "ASoC Mobile Analyzer"; //$NON-NLS-1$
+	
 	private String m_credentials;
 	private String m_application;
 	private String m_loginUser;
 	private Secret m_loginPassword;
 	private String m_extraField;
 	private String m_presenceId;
+	private String m_testName;
+	private boolean m_email;
+	private boolean m_wait;
+	private boolean m_failBuildNonCompliance;
+	private boolean m_failBuild;
+	//failureConditions   List<FailureCondition> failureConditions
 	
 	@Deprecated
 	public MobileAnalyzer(String target) {
-		this(target, EMPTY, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY);
+		this(target, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, false, false, false, false);
 	}
 	
+	
 	@Deprecated
-	public MobileAnalyzer(String target, String credentials, String application, boolean hasOptions, String loginUser, String loginPassword, String extraField, String presenceId) {
+	public MobileAnalyzer(String target, boolean hasOptions, String credentials, String application, String loginUser, String loginPassword, String extraField, String presenceId, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild ) {
 		super(target, hasOptions);
 		m_credentials = credentials;
 		m_application = application;
@@ -62,6 +70,11 @@ public class MobileAnalyzer extends Scanner {
 		m_loginPassword = Secret.fromString(loginPassword);
 		m_extraField = extraField;
 		m_presenceId = presenceId;
+		m_testName = testName;
+		m_email = email;
+		m_wait = wait;
+		m_failBuildNonCompliance = failBuildNonCompliance;
+		m_failBuild = failBuild;
 	}
 	
 	@DataBoundConstructor
@@ -73,6 +86,11 @@ public class MobileAnalyzer extends Scanner {
 		m_loginPassword = Secret.fromString(EMPTY);
 		m_extraField = EMPTY;
 		m_presenceId = EMPTY;
+		m_testName = EMPTY;
+		m_email = false;
+		m_wait = false;
+		m_failBuildNonCompliance = false;
+		m_failBuild = false;
 	}
 	
 	@DataBoundSetter
@@ -129,6 +147,51 @@ public class MobileAnalyzer extends Scanner {
 		return m_presenceId;
 	}
 	
+	@DataBoundSetter
+	public void setTestName(String testName) {
+		m_testName = testName;
+	}
+	
+	public String getTestName() {
+		return m_testName;
+	}
+	
+	@DataBoundSetter
+	public void setEmail(boolean email) {
+		m_email = email;
+	}
+	
+	public boolean getEmail() {
+		return m_email;
+	}
+	
+	@DataBoundSetter
+	public void setWait(boolean wait) {
+		m_wait = wait;
+	}
+	
+	public boolean getWait() {
+		return m_wait;
+	}
+	
+	@DataBoundSetter
+	public void setFailBuildNonCompliance(boolean failBuildNonCompliance){
+		m_failBuildNonCompliance=failBuildNonCompliance;
+	}
+
+	public boolean getFailBuildNonCompliance(){
+	    return m_failBuildNonCompliance;
+	}
+	
+	@DataBoundSetter
+	public void setFailBuild(boolean failBuild) {
+		m_failBuild = failBuild;
+	}
+	
+	public boolean getFailBuild() {
+		return m_failBuild;
+	}
+	
 	@Override
 	public String getType() {
 		return MOBILE_ANALYZER;
@@ -138,11 +201,18 @@ public class MobileAnalyzer extends Scanner {
 	public Map<String, String> getProperties(VariableResolver<String> resolver) {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put(TARGET, resolver == null ? getTarget() : resolvePath(getTarget(), resolver));
+		//hasOptions
+		properties.put("credentials", m_credentials);
+		properties.put("applicationId", m_application);
 		properties.put(LOGIN_USER, m_loginUser);
 		properties.put(LOGIN_PASSWORD, Secret.toString(m_loginPassword));
 		properties.put(EXTRA_FIELD, m_extraField);
 		properties.put(PRESENCE_ID, m_presenceId);
-		properties.put(CREDENTIALS, m_credentials);
+		properties.put("testName", m_testName);
+		properties.put("email", Boolean.toString(m_email));
+		properties.put("wait", Boolean.toString(m_wait));
+		properties.put("failBuildNonCompliance", Boolean.toString(m_failBuildNonCompliance));
+		properties.put("failBuild", Boolean.toString(m_failBuild));
 		return properties;
 	}
 
