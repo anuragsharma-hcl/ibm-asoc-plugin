@@ -57,9 +57,8 @@ public class MobileAnalyzer extends Scanner {
 	
 	@Deprecated
 	public MobileAnalyzer(String target) {
-		this(target, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, false, false, false, false);
+		this(target, false);
 	}
-	
 	
 	@Deprecated
 	public MobileAnalyzer(String target, boolean hasOptions, String credentials, String application, String loginUser, String loginPassword, String extraField, String presenceId, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild ) {
@@ -99,7 +98,7 @@ public class MobileAnalyzer extends Scanner {
 	}
         
 	public String getCredentials() {
-	    return m_credentials;
+		return m_credentials;
 	}
 	
 	@DataBoundSetter
@@ -180,7 +179,7 @@ public class MobileAnalyzer extends Scanner {
 	}
 
 	public boolean getFailBuildNonCompliance(){
-	    return m_failBuildNonCompliance;
+		return m_failBuildNonCompliance;
 	}
 	
 	@DataBoundSetter
@@ -224,6 +223,10 @@ public class MobileAnalyzer extends Scanner {
 		public String getDisplayName() {
 			return MOBILE_ANALYZER;
 		}
+		
+		public FormValidation doCheckTarget(@QueryParameter String target) {
+	    		return FormValidation.validateRequired(target);
+	    	}
 		
 		public ListBoxModel doFillCredentialsItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
 			//We could just use listCredentials() to get the ListBoxModel, but need to work around JENKINS-12802.
@@ -294,10 +297,6 @@ public class MobileAnalyzer extends Scanner {
 		    			model.add(entry.getValue(), entry.getKey());
 	    		}
 	    		return model;
-	    	}
-		
-	    	public FormValidation doCheckTarget(@QueryParameter String target) {
-	    		return FormValidation.validateRequired(target);
-	    	}
+		}
 	}
 }

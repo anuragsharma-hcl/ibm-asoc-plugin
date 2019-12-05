@@ -15,7 +15,6 @@ import static com.hcl.appscan.jenkins.plugin.scanners.ScannerConstants.EMPTY;
 import com.hcl.appscan.sdk.CoreConstants;
 import com.hcl.appscan.sdk.app.CloudApplicationProvider;
 import com.hcl.appscan.sdk.auth.IAuthenticationProvider;
-import com.hcl.appscan.sdk.scanners.sast.SASTConstants;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,20 +39,32 @@ import org.kohsuke.stapler.DataBoundSetter;
 public class StaticAnalyzer extends Scanner {
 
 	private static final String STATIC_ANALYZER = "ASoC Static Analyzer"; //$NON-NLS-1$
+	
         private String m_credentials;
 	private String m_application;
-        private boolean m_openSourceOnly;
+	private boolean m_openSourceOnly;
+	private String m_testName;
+	private boolean m_email;
+	private boolean m_wait;
+	private boolean m_failBuildNonCompliance;
+	private boolean m_failBuild;
+	//failureConditions   List<FailureCondition> failureConditions
         
         @Deprecated
         public StaticAnalyzer(String target){
-            this(target, false);
+		this(target, false);
         }
         
-        public StaticAnalyzer(String target, String credentials, String application, boolean hasOptions, boolean openSourceOnly){
-            super(target, hasOptions);
-            m_credentials = credentials;
-	    m_application = application;
-            m_openSourceOnly=openSourceOnly;
+        public StaticAnalyzer(String target, boolean hasOptions, String credentials, String application,  boolean openSourceOnly, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild){
+		super(target, hasOptions);
+		m_credentials = credentials;
+		m_application = application;
+		m_openSourceOnly=openSourceOnly;
+		m_testName = testName;
+		m_email = email;
+		m_wait = wait;
+		m_failBuildNonCompliance = failBuildNonCompliance;
+		m_failBuild = failBuild;
         }
         
 	@DataBoundConstructor
@@ -62,6 +73,11 @@ public class StaticAnalyzer extends Scanner {
 		m_credentials = EMPTY;
 		m_application = EMPTY;
                 m_openSourceOnly=false;
+		m_testName = EMPTY;
+		m_email = false;
+		m_wait = false;
+		m_failBuildNonCompliance = false;
+		m_failBuild = false;
 	}
 	
 	@DataBoundSetter
@@ -70,7 +86,7 @@ public class StaticAnalyzer extends Scanner {
 	}
         
 	public String getCredentials() {
-	    return m_credentials;
+		return m_credentials;
 	}
 	
 	@DataBoundSetter
@@ -81,27 +97,80 @@ public class StaticAnalyzer extends Scanner {
 	public String getApplication() {
 		return m_application;
 	}
+
+	@DataBoundSetter
+        public boolean isOpenSourceOnly() {
+		return m_openSourceOnly;
+        }
+        
+        @DataBoundSetter
+        public void setOpenSourceOnly(boolean openSourceOnly) {
+		m_openSourceOnly = openSourceOnly;
+        }
+	
+	@DataBoundSetter
+	public void setTestName(String testName) {
+		m_testName = testName;
+	}
+	
+	public String getTestName() {
+		return m_testName;
+	}
+	
+	@DataBoundSetter
+	public void setEmail(boolean email) {
+		m_email = email;
+	}
+	
+	public boolean getEmail() {
+		return m_email;
+	}
+	
+	@DataBoundSetter
+	public void setWait(boolean wait) {
+		m_wait = wait;
+	}
+	
+	public boolean getWait() {
+		return m_wait;
+	}
+	
+	@DataBoundSetter
+	public void setFailBuildNonCompliance(boolean failBuildNonCompliance){
+		m_failBuildNonCompliance=failBuildNonCompliance;
+	}
+
+	public boolean getFailBuildNonCompliance(){
+		return m_failBuildNonCompliance;
+	}
+	
+	@DataBoundSetter
+	public void setFailBuild(boolean failBuild) {
+		m_failBuild = failBuild;
+	}
+	
+	public boolean getFailBuild() {
+		return m_failBuild;
+	}
 	
 	@Override
 	public String getType() {
 		return STATIC_ANALYZER;
 	}
-        
-        public boolean isOpenSourceOnly() {
-            return m_openSourceOnly;
-        }
-        
-        @DataBoundSetter
-        public void setOpenSourceOnly(boolean openSourceOnly) {
-            m_openSourceOnly = openSourceOnly;
-        }
 	
 	public Map<String, String> getProperties(VariableResolver<String> resolver) {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put(TARGET, resolver == null ? getTarget() : resolvePath(getTarget(), resolver));
+		//hasOptions
+		properties.put("credentials", m_credentials);
+		properties.put("applicationId", m_application);
                 if (m_openSourceOnly)
                     properties.put(CoreConstants.OPEN_SOURCE_ONLY, "");
-		properties.put(CREDENTIALS, m_credentials);
+		properties.put("testName", m_testName);
+		properties.put("email", Boolean.toString(m_email));
+		properties.put("wait", Boolean.toString(m_wait));
+		properties.put("failBuildNonCompliance", Boolean.toString(m_failBuildNonCompliance));
+		properties.put("failBuild", Boolean.toString(m_failBuild));
 		return properties;
 	}
 	
@@ -113,11 +182,11 @@ public class StaticAnalyzer extends Scanner {
 		public String getDisplayName() {
 			return STATIC_ANALYZER;
 		}
-			
-	    	public FormValidation doCheckTarget(@QueryParameter String target) {
+		
+		public FormValidation doCheckTarget(@QueryParameter String target) {
 	    		return FormValidation.validateRequired(target);
 	    	}
-		
+			
 		public ListBoxModel doFillCredentialsItems(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
 			//We could just use listCredentials() to get the ListBoxModel, but need to work around JENKINS-12802.
 			ListBoxModel model = new ListBoxModel();
