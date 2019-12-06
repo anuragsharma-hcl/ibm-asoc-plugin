@@ -49,7 +49,6 @@ public class StaticAnalyzer extends Scanner {
 	private boolean m_wait;
 	private boolean m_failBuildNonCompliance;
 	private boolean m_failBuild;
-	//failureConditions   List<FailureCondition> failureConditions
         
         @Deprecated
         public StaticAnalyzer(String target){
@@ -162,7 +161,6 @@ public class StaticAnalyzer extends Scanner {
 	public Map<String, String> getProperties(VariableResolver<String> resolver) {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put(TARGET, resolver == null ? getTarget() : resolvePath(getTarget(), resolver));
-		//hasOptions
 		properties.put("credentials", m_credentials);
 		properties.put("applicationId", m_application);
                 if (m_openSourceOnly)

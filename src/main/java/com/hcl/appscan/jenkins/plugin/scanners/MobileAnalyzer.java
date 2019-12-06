@@ -54,7 +54,6 @@ public class MobileAnalyzer extends Scanner {
 	private boolean m_wait;
 	private boolean m_failBuildNonCompliance;
 	private boolean m_failBuild;
-	//failureConditions   List<FailureCondition> failureConditions
 	
 	@Deprecated
 	public MobileAnalyzer(String target) {
@@ -62,7 +61,7 @@ public class MobileAnalyzer extends Scanner {
 	}
 	
 	@Deprecated
-	public MobileAnalyzer(String target, boolean hasOptions, String credentials, String application, String loginUser, String loginPassword, String extraField, String presenceId, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild ) {
+	public MobileAnalyzer(String target, boolean hasOptions, String credentials, String application, String loginUser, String loginPassword, String extraField, String presenceId, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild) {
 		super(target, hasOptions);
 		m_credentials = credentials;
 		m_application = application;
@@ -201,7 +200,6 @@ public class MobileAnalyzer extends Scanner {
 	public Map<String, String> getProperties(VariableResolver<String> resolver) {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put(TARGET, resolver == null ? getTarget() : resolvePath(getTarget(), resolver));
-		//hasOptions
 		properties.put("credentials", m_credentials);
 		properties.put("applicationId", m_application);
 		properties.put(LOGIN_USER, m_loginUser);

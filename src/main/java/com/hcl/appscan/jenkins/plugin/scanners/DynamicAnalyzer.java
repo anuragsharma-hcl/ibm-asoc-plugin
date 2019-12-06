@@ -39,40 +39,53 @@ import hudson.util.Secret;
 import hudson.util.VariableResolver;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DynamicAnalyzer extends Scanner {
 
 	private static final String DYNAMIC_ANALYZER = "ASoC Dynamic Analyzer"; //$NON-NLS-1$
+	
 	private String m_credentials;
 	private String m_application;
+	private String m_scanType;
+	private String m_optimization;
 	private String m_loginUser;
 	private Secret m_loginPassword;
+	private String m_extraField;
 	private String m_presenceId;
 	private String m_scanFile;
 	private String m_testPolicy;
-	private String m_scanType;
-	private String m_optimization;
-	private String m_extraField;
-	
+	private String m_testName;
+	private boolean m_email;
+	private boolean m_wait;
+	private boolean m_failBuildNonCompliance;
+	private boolean m_failBuild;
+	//failureConditions
+
 	@Deprecated
 	public DynamicAnalyzer(String target) {
-		this(target, EMPTY, EMPTY, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY); 
+		this(target, false); 
 	}
 	
 	@Deprecated
-	public DynamicAnalyzer(String target, String credentials,  String application, boolean hasOptions, String loginUser, String loginPassword, String presenceId, String scanFile, 
-			String testPolicy, String scanType,String optimization, String extraField) {
+	public DynamicAnalyzer(String target, boolean hasOptions, String credentials,  String application, String scanType, String optimization, String loginUser, String loginPassword, String extraField, String presenceId, String scanFile, 
+			String testPolicy, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild) {
 		super(target, hasOptions);
 		m_credentials = credentials;
 		m_application = application;
-		m_loginUser = loginUser;
-		m_loginPassword = Secret.fromString(loginPassword);
-		m_presenceId = presenceId;
-		m_scanFile = scanFile;
-		m_testPolicy = EMPTY;
 		m_scanType = scanFile != null && !scanFile.equals(EMPTY) ? CUSTOM : scanType;
 		m_optimization = optimization;
+		m_loginUser = loginUser;
+		m_loginPassword = Secret.fromString(loginPassword);
 		m_extraField = extraField;
+		m_presenceId = presenceId;
+		m_scanFile = scanFile;
+		m_testPolicy = testPolicy;
+		m_testName = (testName == null || testName.trim().equals("")) ? "" + ThreadLocalRandom.current().nextInt(0, 10000) : testName;
+		m_email = email;
+		m_wait = wait;
+		m_failBuildNonCompliance = failBuildNonCompliance;
+		m_failBuild = failBuild;
 	}
 	
 	@DataBoundConstructor
@@ -80,14 +93,19 @@ public class DynamicAnalyzer extends Scanner {
 		super(target, hasOptions);
 		m_credentials = EMPTY;
 		m_application = EMPTY;
+		m_scanType = EMPTY;
+		m_optimization = EMPTY;
 		m_loginUser = EMPTY;
 		m_loginPassword = Secret.fromString(EMPTY);
+		m_extraField = EMPTY;
 		m_presenceId = EMPTY;
 		m_scanFile = EMPTY;
 		m_testPolicy = EMPTY;
-		m_scanType = EMPTY;
-		m_optimization = EMPTY;
-		m_extraField = EMPTY;
+		m_testName = EMPTY;
+		m_email = false;
+		m_wait = false;
+		m_failBuildNonCompliance = false;
+		m_failBuild = false;
 	}
 	
 	 @DataBoundSetter
@@ -96,7 +114,7 @@ public class DynamicAnalyzer extends Scanner {
 	}
         
 	public String getCredentials() {
-	    return m_credentials;
+		return m_credentials;
 	}
 	
 	@DataBoundSetter
@@ -106,6 +124,24 @@ public class DynamicAnalyzer extends Scanner {
 	
 	public String getApplication() {
 		return m_application;
+	}
+	
+	@DataBoundSetter
+	public void setScanType(String scanType) {
+		m_scanType = m_scanFile != null && !m_scanFile.equals(EMPTY) ? CUSTOM : scanType;
+	}
+	
+	public String getScanType() {
+		return m_scanType;
+	}
+
+	@DataBoundSetter
+	public void setOptimization(String optimization) {
+		m_optimization = optimization;
+	}
+	
+	public String getOptimization() {
+		return m_optimization;
 	}
 	
 	@DataBoundSetter
@@ -124,6 +160,15 @@ public class DynamicAnalyzer extends Scanner {
 	
 	public Secret getLoginPassword() {
 		return m_loginPassword;
+	}
+	
+	@DataBoundSetter
+	public void setExtraField(String extraField) {
+		m_extraField = extraField;
+	}
+	
+	public String getExtraField() {
+		return m_extraField;
 	}
 
 	@DataBoundSetter
@@ -154,30 +199,48 @@ public class DynamicAnalyzer extends Scanner {
 	}
 	
 	@DataBoundSetter
-	public void setScanType(String scanType) {
-		m_scanType = m_scanFile != null && !m_scanFile.equals(EMPTY) ? CUSTOM : scanType;
+	public void setTestName(String testName) {
+		m_testName = testName;
 	}
 	
-	public String getScanType() {
-		return m_scanType;
+	public String getTestName() {
+		return m_testName;
+	}
+	
+	@DataBoundSetter
+	public void setEmail(boolean email) {
+		m_email = email;
+	}
+	
+	public boolean getEmail() {
+		return m_email;
+	}
+	
+	@DataBoundSetter
+	public void setWait(boolean wait) {
+		m_wait = wait;
+	}
+	
+	public boolean getWait() {
+		return m_wait;
+	}
+	
+	@DataBoundSetter
+	public void setFailBuildNonCompliance(boolean failBuildNonCompliance){
+		m_failBuildNonCompliance=failBuildNonCompliance;
 	}
 
-	@DataBoundSetter
-	public void setOptimization(String optimization) {
-		m_optimization = optimization;
-	}
-	
-	public String getOptimization() {
-		return m_optimization;
+	public boolean getFailBuildNonCompliance(){
+		return m_failBuildNonCompliance;
 	}
 	
 	@DataBoundSetter
-	public void setExtraField(String extraField) {
-		m_extraField = extraField;
+	public void setFailBuild(boolean failBuild) {
+		m_failBuild = failBuild;
 	}
 	
-	public String getExtraField() {
-		return m_extraField;
+	public boolean getFailBuild() {
+		return m_failBuild;
 	}
 	
 	@Override
@@ -189,15 +252,21 @@ public class DynamicAnalyzer extends Scanner {
 	public Map<String, String> getProperties(VariableResolver<String> resolver) {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put(TARGET, getTarget());
+		properties.put("credentials", m_credentials);
+		properties.put("applicationId", m_application);
+		properties.put("scanType", m_scanType);
+		properties.put(OPTIMIZATION, m_optimization.equals("Normal")? "false":"true");
 		properties.put(LOGIN_USER, m_loginUser);
 		properties.put(LOGIN_PASSWORD, Secret.toString(m_loginPassword));
+		properties.put(EXTRA_FIELD, m_extraField);
 		properties.put(PRESENCE_ID, m_presenceId);
 		properties.put(SCAN_FILE, resolver == null ? m_scanFile : resolvePath(m_scanFile, resolver));
 		properties.put(TEST_POLICY, m_testPolicy);
-		properties.put(SCAN_TYPE, m_scanType);
-		properties.put(OPTIMIZATION, m_optimization.equals("Normal")? "false":"true");
-		properties.put(EXTRA_FIELD, m_extraField);
-		properties.put(CREDENTIALS, m_credentials);
+		properties.put("testName", m_testName);
+		properties.put("email", Boolean.toString(m_email));
+		properties.put("wait", Boolean.toString(m_wait));
+		properties.put("failBuildNonCompliance", Boolean.toString(m_failBuildNonCompliance));
+		properties.put("failBuild", Boolean.toString(m_failBuild));
 		return properties;
 	}
 	
@@ -282,28 +351,28 @@ public class DynamicAnalyzer extends Scanner {
 			return list;
 		}
 		
-    	public ListBoxModel doFillPresenceIdItems(@RelativePath("..") @QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) { //$NON-NLS-1$
-    		IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
-    		Map<String, String> presences = new CloudPresenceProvider(authProvider).getPresences();
-    		ListBoxModel model = new ListBoxModel();
-    		model.add(""); //$NON-NLS-1$
-    		
-    		if(presences != null) {
-	    		for(Map.Entry<String, String> entry : presences.entrySet())
-	    			model.add(entry.getValue(), entry.getKey());
-    		}
-    		return model;
-    	}
+		public ListBoxModel doFillPresenceIdItems(@RelativePath("..") @QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) { //$NON-NLS-1$
+			IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
+			Map<String, String> presences = new CloudPresenceProvider(authProvider).getPresences();
+			ListBoxModel model = new ListBoxModel();
+			model.add(""); //$NON-NLS-1$
+
+			if(presences != null) {
+				for(Map.Entry<String, String> entry : presences.entrySet())
+					model.add(entry.getValue(), entry.getKey());
+			}
+			return model;
+		}
 		
-    	public FormValidation doCheckScanFile(@QueryParameter String scanFile) {
-    		if(!scanFile.trim().equals(EMPTY) && !scanFile.endsWith(TEMPLATE_EXTENSION) && !scanFile.endsWith(TEMPLATE_EXTENSION2))
-    			return FormValidation.error(Messages.error_invalid_template_file());
-    		return FormValidation.ok();
-    	}
-    	
-    	public FormValidation doCheckTarget(@QueryParameter String target) {
-    		return FormValidation.validateRequired(target);
-    	}
+		public FormValidation doCheckScanFile(@QueryParameter String scanFile) {
+			if(!scanFile.trim().equals(EMPTY) && !scanFile.endsWith(TEMPLATE_EXTENSION) && !scanFile.endsWith(TEMPLATE_EXTENSION2))
+				return FormValidation.error(Messages.error_invalid_template_file());
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckTarget(@QueryParameter String target) {
+			return FormValidation.validateRequired(target);
+		}
 	}
 }
 
