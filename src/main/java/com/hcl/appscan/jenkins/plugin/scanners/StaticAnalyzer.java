@@ -50,11 +50,7 @@ public class StaticAnalyzer extends Scanner {
 	private boolean m_failBuildNonCompliance;
 	private boolean m_failBuild;
         
-        @Deprecated
-        public StaticAnalyzer(String target){
-		this(target, false);
-        }
-        
+	@Deprecated
         public StaticAnalyzer(String target, boolean hasOptions, String credentials, String application,  boolean openSourceOnly, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild){
 		super(target, hasOptions);
 		m_credentials = credentials;
@@ -68,12 +64,12 @@ public class StaticAnalyzer extends Scanner {
         }
         
 	@DataBoundConstructor
-	public StaticAnalyzer(String target,boolean hasOptions) {
+	public StaticAnalyzer(String target, boolean hasOptions, String credentials, String application, String testName) {
 		super(target, hasOptions);
-		m_credentials = EMPTY;
-		m_application = EMPTY;
+		m_credentials = credentials;
+		m_application = application;
                 m_openSourceOnly=false;
-		m_testName = EMPTY;
+		m_testName = (testName == null || testName.trim().equals("")) ? "" + ThreadLocalRandom.current().nextInt(0, 10000) : testName;
 		m_email = false;
 		m_wait = false;
 		m_failBuildNonCompliance = false;

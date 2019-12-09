@@ -56,11 +56,6 @@ public class MobileAnalyzer extends Scanner {
 	private boolean m_failBuild;
 	
 	@Deprecated
-	public MobileAnalyzer(String target) {
-		this(target, false);
-	}
-	
-	@Deprecated
 	public MobileAnalyzer(String target, boolean hasOptions, String credentials, String application, String loginUser, String loginPassword, String extraField, String presenceId, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild) {
 		super(target, hasOptions);
 		m_credentials = credentials;
@@ -77,15 +72,15 @@ public class MobileAnalyzer extends Scanner {
 	}
 	
 	@DataBoundConstructor
-	public MobileAnalyzer(String target, boolean hasOptions) {
+	public MobileAnalyzer(String target, boolean hasOptions, String credentials, String application, String testName) {
 		super(target, hasOptions);
-		m_credentials = EMPTY;
-		m_application = EMPTY;
+		m_credentials = credentials;
+		m_application = application;
 		m_loginUser = EMPTY;
 		m_loginPassword = Secret.fromString(EMPTY);
 		m_extraField = EMPTY;
 		m_presenceId = EMPTY;
-		m_testName = EMPTY;
+		m_testName = (testName == null || testName.trim().equals("")) ? "" + ThreadLocalRandom.current().nextInt(0, 10000) : testName;
 		m_email = false;
 		m_wait = false;
 		m_failBuildNonCompliance = false;

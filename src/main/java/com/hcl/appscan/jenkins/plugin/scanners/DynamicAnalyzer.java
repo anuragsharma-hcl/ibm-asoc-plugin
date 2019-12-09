@@ -63,11 +63,6 @@ public class DynamicAnalyzer extends Scanner {
 	//failureConditions
 
 	@Deprecated
-	public DynamicAnalyzer(String target) {
-		this(target, false); 
-	}
-	
-	@Deprecated
 	public DynamicAnalyzer(String target, boolean hasOptions, String credentials,  String application, String scanType, String optimization, String loginUser, String loginPassword, String extraField, String presenceId, String scanFile, 
 			String testPolicy, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild) {
 		super(target, hasOptions);
@@ -89,10 +84,10 @@ public class DynamicAnalyzer extends Scanner {
 	}
 	
 	@DataBoundConstructor
-	public DynamicAnalyzer(String target, boolean hasOptions) {
+	public DynamicAnalyzer(String target, boolean hasOptions, String credentials, String application, String testName) {
 		super(target, hasOptions);
-		m_credentials = EMPTY;
-		m_application = EMPTY;
+		m_credentials = credentials;
+		m_application = application;
 		m_scanType = EMPTY;
 		m_optimization = EMPTY;
 		m_loginUser = EMPTY;
@@ -101,7 +96,7 @@ public class DynamicAnalyzer extends Scanner {
 		m_presenceId = EMPTY;
 		m_scanFile = EMPTY;
 		m_testPolicy = EMPTY;
-		m_testName = EMPTY;
+		m_testName = (testName == null || testName.trim().equals("")) ? "" + ThreadLocalRandom.current().nextInt(0, 10000) : testName;
 		m_email = false;
 		m_wait = false;
 		m_failBuildNonCompliance = false;
