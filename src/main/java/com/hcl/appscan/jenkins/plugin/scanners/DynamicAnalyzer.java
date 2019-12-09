@@ -61,6 +61,11 @@ public class DynamicAnalyzer extends Scanner {
 	private boolean m_failBuildNonCompliance;
 	private boolean m_failBuild;
 	//failureConditions
+	
+	@Deprecated
+	public DynamicAnalyzer(String target) {
+		this(target, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, false, false, false, false); 
+	}
 
 	@Deprecated
 	public DynamicAnalyzer(String target, boolean hasOptions, String credentials,  String application, String scanType, String optimization, String loginUser, String loginPassword, String extraField, String presenceId, String scanFile, 

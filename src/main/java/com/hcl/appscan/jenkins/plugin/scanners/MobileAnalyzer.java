@@ -56,6 +56,11 @@ public class MobileAnalyzer extends Scanner {
 	private boolean m_failBuild;
 	
 	@Deprecated
+	public MobileAnalyzer(String target) {
+		this(target, false, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, false, false, false, false);
+	}
+	
+	@Deprecated
 	public MobileAnalyzer(String target, boolean hasOptions, String credentials, String application, String loginUser, String loginPassword, String extraField, String presenceId, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild) {
 		super(target, hasOptions);
 		m_credentials = credentials;

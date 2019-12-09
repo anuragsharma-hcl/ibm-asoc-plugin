@@ -49,6 +49,11 @@ public class StaticAnalyzer extends Scanner {
 	private boolean m_wait;
 	private boolean m_failBuildNonCompliance;
 	private boolean m_failBuild;
+	
+	@Deprecated
+        public StaticAnalyzer(String target){
+            this(target, false, EMPTY, EMPTY, false, EMPTY, false, false, false, false);
+        }
         
 	@Deprecated
         public StaticAnalyzer(String target, boolean hasOptions, String credentials, String application,  boolean openSourceOnly, String testName, boolean email, boolean wait, boolean failBuildNonCompliance, boolean failBuild){
