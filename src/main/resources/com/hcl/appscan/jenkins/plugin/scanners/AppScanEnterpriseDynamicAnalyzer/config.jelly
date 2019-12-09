@@ -42,7 +42,6 @@
     <f:entry title="" />
         
     <f:section title="${%label.login.management}" field="loginTypeOptions">
-        
             
         <f:radioBlock name="loginType" title="${%label.recorded}" checked="true">
             <st:nbsp/>
