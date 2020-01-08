@@ -56,14 +56,16 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner implements Scanner
         private String m_aseTemplate;
         private String m_aseAgent;
         private String m_target;
+        private String m_trafficFile;
+        private String m_customTemplate;
 	
 	@Deprecated
 	public AppScanEnterpriseDynamicAnalyzer(String target) {
-		this(target,EMPTY,EMPTY, false, EMPTY,EMPTY, EMPTY, EMPTY); 
+		this(target,EMPTY,EMPTY, false, EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY); 
 	}
 	
 	@Deprecated
-	public AppScanEnterpriseDynamicAnalyzer(String target,String credentials,String application, boolean hasOptions, String folderId,String aseTestPolicy,String aseTemplate,String aseAgent) {
+	public AppScanEnterpriseDynamicAnalyzer(String target,String credentials,String application, boolean hasOptions, String folderId,String aseTestPolicy,String aseTemplate,String aseAgent,String customTemplate,String trafficFile) {
 		super(target, hasOptions);
 		m_target=target;
                 m_credentials=credentials;
@@ -72,6 +74,8 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner implements Scanner
                 m_aseTestPolicy=aseTestPolicy;
                 m_aseTemplate=aseTemplate;
                 m_aseAgent=aseAgent;
+                m_trafficFile=trafficFile;
+                m_customTemplate=customTemplate;
 	}
 	
 	@DataBoundConstructor
@@ -83,6 +87,9 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner implements Scanner
                 m_aseTestPolicy=EMPTY;
                 m_aseTemplate=EMPTY;
                 m_aseAgent=EMPTY;
+                m_customTemplate=EMPTY;
+                m_trafficFile=EMPTY;
+                
 		
 	}
 	
@@ -146,6 +153,24 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner implements Scanner
         public String getCredentials(){
             return m_credentials;
         }
+        
+        @DataBoundSetter
+	public void setCustomTemplate(String customTemplate) {
+		m_customTemplate = customTemplate;
+	}
+	
+	public String getCustomTemplate() {
+		return m_customTemplate;
+	}
+        
+        @DataBoundSetter
+	public void setTrafficFile(String trafficFile) {
+		m_trafficFile = trafficFile;
+	}
+	
+	public String getTrafficFile() {
+		return m_trafficFile;
+	}
 	
 	@Override
 	public Map<String, String> getProperties(VariableResolver<String> resolver) {
@@ -162,6 +187,8 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner implements Scanner
                 properties.put("applicationId", m_application);
                 properties.put("templateId", m_aseTemplate);
                 properties.put("credentials", m_credentials);
+                properties.put("customTemplate", m_customTemplate);
+                properties.put("trafficFile", m_trafficFile);
                 
                 
 		return properties;
@@ -288,5 +315,31 @@ public class AppScanEnterpriseDynamicAnalyzer extends Scanner implements Scanner
     	public FormValidation doCheckTarget(@QueryParameter String target) {
     		return FormValidation.validateRequired(target);
     	}
+        
+        public FormValidation doCheckCredentials(@QueryParameter String credentials, @AncestorInPath ItemGroup<?> context) {
+    		if(credentials.trim().equals("")) //$NON-NLS-1$
+    			return FormValidation.errorWithMarkup(Messages.error_no_creds_ase("/credentials")); //$NON-NLS-1$
+    		
+    		IAuthenticationProvider authProvider = new JenkinsAuthenticationProvider(credentials, context);
+    		if(authProvider.isTokenExpired())
+    			return FormValidation.errorWithMarkup(Messages.error_token_expired("/credentials")); //$NON-NLS-1$
+    			
+    		return FormValidation.ok();
+    	}
+        
+        public FormValidation doCheckFolderId(@QueryParameter String folderId) {
+    		return FormValidation.validateRequired(folderId);
+    	}
+        public FormValidation doCheckAseTestPolicy(@QueryParameter String aseTestPolicy) {
+    		return FormValidation.validateRequired(aseTestPolicy);
+    	}
+        
+        public FormValidation doCheckTrafficFile(@QueryParameter String trafficFile) {
+    		return FormValidation.validateRequired(trafficFile);
+    	}
+        public FormValidation doCheckCustomTemplate(@QueryParameter String customTemplate) {
+    		return FormValidation.validateRequired(customTemplate);
+    	}
+        
 	}
 }
